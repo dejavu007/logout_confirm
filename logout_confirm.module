@@ -1,0 +1,66 @@
+<?php
+
+/**
+ * @file
+ * Use this module to confirm user logging out.
+ */
+
+ 
+/**
+ * Implementation of hook_menu_alter().
+ * 
+ * @param array $items
+ *  Menu items keyed by path.
+ */
+function logout_confirm_menu_alter(&$items) {
+  // Replace the page callback to 'user_logout' with a call to
+  // our own page callback.
+  $items['user/logout']['page callback'] = 'logout_confirm_page';
+  // Drupal no longer has to load the user.pages.inc file
+  // since it will be calling logout_confirm_page(), which
+  // is in our module.
+  unset($items['user/logout']['file']);
+}
+/**
+ * Page callback.
+ */
+function logout_confirm_page() {
+  $output = t('Are you sure you wish to logout?');
+  $logout_confirm_form = drupal_get_form('logout_confirm_form');
+  $output .= render($logout_confirm_form);
+  return $output;
+}
+function logout_confirm_form($form_state) {
+  // Define a submit function.
+  $form['logout_confirm']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Yes'),
+  );
+  $form['logout_confirm']['no'] = array(
+    '#type' => 'submit',
+    '#value' => t('No'),
+  );
+
+  return $form;
+}
+/**
+ * Handle submission of the form.
+ */
+function logout_confirm_form_submit($form, $form_state) {
+  // Store the value of clicked button in a variable.
+  $confirm_logout = $form_state['clicked_button']['#value'];
+  if ($confirm_logout == 'Yes') {
+    global $user;
+
+    watchdog('user', 'Session closed for %name.', array('%name' => $user->name));
+
+    module_invoke_all('user_logout', $user);
+
+    // Destroy the current session, and reset $user to the anonymous user.
+    session_destroy();
+
+    drupal_goto();
+  }	elseif ($confirm_logout == 'No') {
+	drupal_goto();
+  }
+}

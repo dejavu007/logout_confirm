@@ -1,0 +1,4 @@
+name = Logout Confirm
+description = To confirm logging out of user.
+core = 7.x
+package = Custom
