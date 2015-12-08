@@ -13,3 +13,6 @@ See http://drupal.org/node/70151.
 **Configuration**
 
 The module just need to be enabled. There is nothing to configure.
+
+** Author **
+Titto Jose (Drupal profile - dejavu_007 - https://www.drupal.org/u/dejavu_007) 
